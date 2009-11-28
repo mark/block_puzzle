@@ -206,8 +206,8 @@ class blockpuzzle.controller.game.BPController extends BPObject {
         for (var klass in _global) {
             // eg. XxxxPatchController
             
-            // [............Starts with prefix............]    [............Ends with "Controller"...............]    [* is not empty]
-	        if (klass.substring(0, prefix.length) == prefix && klass.substr(- "Controller".length) == "Controller" && klass != name) {
+            //  [...........Starts with prefix............]    [............Ends with "Controller"...............]    [* is not empty]
+	        if (klass.substring(0, prefix.length) == prefix && klass.substr(- "Controller".length) == "Controller" && klass  !=   name) {
 	            //trace("\tfound " + klass);
 	            controllerClasses.push(_global[klass]);
 	        }

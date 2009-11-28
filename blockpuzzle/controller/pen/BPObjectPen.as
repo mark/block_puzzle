@@ -64,8 +64,8 @@ class blockpuzzle.controller.pen.BPObjectPen extends BPPen {
     }
     
     function endDrag(mouseEvent:BPMouseEvent) {
-        var actorController = controller.actorControllerFor(mouseEvent.dragObject.dragKey, options);
-        var actor = actorController.loadActor(board(), options);
+        var actorController = controller.actorControllerFor(mouseEvent.dragObject.dragKey); //, options);
+        var actor = actorController.loadActor(board()); //, options);
 
         currentAction = new BPAddAction(object).wait(true);
 		currentAction.causes(new BPSelectionAction(controller));

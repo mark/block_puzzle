@@ -26,6 +26,13 @@ class blockpuzzle.controller.game.BPPatchController {
 	*                      *
 	***********************/
 	
+	function tile(key:String, xmlChars:String, frame:String) {
+	    if (tileLibrary == null) tileLibrary = new BPTileLibrary([]);
+
+	    var newTile = new BPTile(key, xmlChars, frame);
+	    tileLibrary.addTile(newTile);
+	}
+	
 	function setTiles(tileArray:Array) {
 		tileLibrary = new BPTileLibrary(tileArray);
 	}

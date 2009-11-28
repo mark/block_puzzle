@@ -1,9 +1,15 @@
+import blockpuzzle.controller.game.BPTile;
+
 class blockpuzzle.controller.game.BPTileLibrary {
 	
 	var tiles:Array;
 
 	function BPTileLibrary(tiles:Array) {
 		this.tiles = tiles;
+	}
+	
+	function addTile(tile:BPTile) {
+	    tiles.push(tile);
 	}
 	
 	function defaultKey():String {

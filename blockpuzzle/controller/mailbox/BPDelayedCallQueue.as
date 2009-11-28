@@ -9,19 +9,40 @@ class blockpuzzle.controller.mailbox.BPDelayedCallQueue extends BPObject {
         this.delayedCalls = new Array();
     }
     
+    // Adds a new delayed call to the queue
     function callLater(object:Object, action, note:String) {
         var newDelayedCall = new BPDelayedCall(object, action, note);
         
         delayedCalls.push(newDelayedCall);
     }
-    
-    function makeDelayedCalls() {
-        if (closeGate('makeDelayedCalls')) return;
+
+    // Gets the list of pending delayed calls, and clears the list
+    function getDelayedCalls():Array {
+        var callsToMake = delayedCalls;
+        delayedCalls = new Array();
         
-        while (delayedCalls.length > 0) {
-            delayedCalls.shift().call();
-        }
-        
-        openGate('makeDelayedCalls');
+        return callsToMake;
     }
+    
+    // Are there any pending delayed calls to be made?
+    function anyDelayedCalls():Boolean {
+        return delayedCalls.length > 0;
+    }
+
+    // Calls all of the delayed calls waiting to be called.
+    // If more delayed calls are posted while the current list is
+    // resolving, then calls them, too.
+    // Finishes when there are no more delayed calls pending.
+    function makeDelayedCalls() {
+        while (anyDelayedCalls()) {
+
+            var callsToMake = getDelayedCalls();
+            
+            for (var i = 0; i < callsToMake.length; i++) {
+                callsToMake[i].call();
+            }
+
+        }
+    }
+
 }
