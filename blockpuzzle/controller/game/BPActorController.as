@@ -229,8 +229,11 @@ class blockpuzzle.controller.game.BPActorController extends BPObject {
     *                 *
     ******************/
     
-	function createActor(options) {
-		return new BPActor(this, key(options), options);
+	function createActor(options):BPActor {
+		var actor = new BPActor(this, key(options), options);
+		initializeActor(actor);
+
+		return actor;
 	}
 
 	function initializeActor(actor) {
@@ -239,7 +242,6 @@ class blockpuzzle.controller.game.BPActorController extends BPObject {
 	
     function loadActor(where, options):BPActor {
 		var newActor = createActor(options);
-		initializeActor(newActor);
 		
 		if (where instanceof BPBoard) {
 		    where.addActor(newActor);
