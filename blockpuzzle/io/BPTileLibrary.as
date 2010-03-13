@@ -1,6 +1,6 @@
-import blockpuzzle.controller.game.BPTile;
+import blockpuzzle.io.BPTile;
 
-class blockpuzzle.controller.game.BPTileLibrary {
+class blockpuzzle.io.BPTileLibrary {
 	
 	var tiles:Array;
 

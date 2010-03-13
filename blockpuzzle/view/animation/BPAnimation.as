@@ -182,8 +182,6 @@ class blockpuzzle.view.animation.BPAnimation extends BPObject {
     }
     
     function cancel() {
-        if (closeGate("cancel")) return;
-        
 		// if (target instanceof BPActor)
 		//     BPMailbox.mailbox.post("BPActorAnimationDestroyed", target, this);
 		// else if (target instanceof BPPatch)

@@ -1,6 +1,7 @@
 ﻿class blockpuzzle.model.collection.BPSet {
     
-    var array:Array;
+    var hash:Object;
+    var length:Number;
     
 	/**********************
 	*                     *
@@ -8,22 +9,22 @@
 	*                     *
 	**********************/
 	
-    function BPSet(array:Array) {
-        this.array = array ? array : new Array();
+    function BPSet(of:Object) {
+        this.hash = new Object();
+        length = 0;
+
+        if (of instanceof Array) {
+            for (var i = 0; i < of.length; i++) {
+                insert( of[i] );
+            }
+        } else if (of) {
+            this.hash = of;
+            for (var k in of) { length++; }
+        }
     }
 
-	function another(array:Array):BPSet {
-		return new BPSet(array);
-	}
-	
-	function clone():BPSet {
-		var ary = new Array();
-		
-		for (var i = 0; i < array.length; i++) {
-			ary.push(array[i]);
-		}
-		
-		return another(ary);
+	function another(of:Object):BPSet {
+		return new BPSet(of);
 	}
 	
 	/****************
@@ -32,34 +33,24 @@
 	*               *
 	****************/
 	
-    //function array():Array {
-	//	return array;
-	//}
-
     function theFirst() {
-		return array[0];
+		for (var k in hash) {
+		    return hash[ k ];
+		}
 	}
     
 	function theNextAfter(current:Object) {
 	    var foundCurrent = false;
 	    
-	    for (var i = 0; i < array.length; i++) {
-            if (foundCurrent) return array[i]; // We already found the current, so this one is next
+	    for (var k in hash) {
+            if (foundCurrent) return hash[k]; // We already found the current, so this one is next
 
-	        if (current == array[i]) foundCurrent = true; // We've found the current, so next one is golden.
+	        if (current == hash[k]) foundCurrent = true; // We've found the current, so next one is golden.
 	    }
 	    
 	    return theFirst(); // We got to the end of the list & didn't find another.
 	}
     
-	function isValid():Boolean {
-		for (var i = 0; i < array.length; i++) {
-			if (array[i] == null) return false;
-		}
-		
-		return true;
-	}
-	
 	/********************
 	*                   *
 	* Insert and Remove *
@@ -67,17 +58,15 @@
 	********************/
 	
 	function insert(what:Object) {
-		// if (! contains(what)) // Note: this line makes larger boards unbelievably slow!  For this to work, we need a not-O(n) imp. of contains.
-			array.push(what);
-			
+	    if (contains(what) ) return;
+	    length++;
+        hash[ what.id() ] = what;
 	}
 	
 	function remove(what:Object) {
-		for (var i = 0; i < array.length; i++)
-			if (array[i] == what) {
-				array.splice(i, 1);
-				return;
-			}
+	    if (! contains(what) ) return;
+	    length--;
+	    delete hash[ what.id() ];
 	}
 	
 	/**************
@@ -86,37 +75,33 @@
 	*             *
 	**************/
 	
-	function contains(obj):Boolean {
-		for (var i = 0; i < array.length; i++) {
-			if (obj == array[i]) return true;
-		}
-		
-		return false;
+	function contains(obj:Object):Boolean {
+		return hash[ obj.id() ] != null;
 	}
 	
 	function union(other:BPSet):BPSet {
-		var ary = new Array();
+		var newSet = another();
 		
-		each( function(obj) { ary.push(obj); } );
-		other.each( function(obj) { ary.push(obj); } );
+		each( function(obj) { newSet.insert(obj); } );
+		other.each( function(obj) { newSet.insert(obj); } );
 		
-		return another(ary);
+		return newSet;
 	}
 
 	function intersection(other:BPSet):BPSet {
-		var ary = new Array();
+		var newSet = another();
 		
-		each( function(obj) { if (other.contains(obj)) ary.push(obj); } );
+		each( function(obj) { if (other.contains(obj)) newSet.insert(obj); } );
 		
-		return another(ary);
+		return newSet;
 	}
 
 	function minus(other:BPSet):BPSet {
-		var ary = new Array();
+		var newSet = another();
 		
-		each( function(obj) { if (! other.contains(obj)) ary.push(obj); } );
+		each( function(obj) { if (! other.contains(obj)) newSet.insert(obj); } );
 		
-		return another(ary);
+		return newSet;
 	}
 
     /*********************
@@ -126,52 +111,52 @@
     *********************/
     
     function each(meth) {
-		for (var i = 0; i < array.length; i++) {
-			_call(array[i], meth);
-		}
+        for (var k in hash) {
+            _call(meth, [ hash[k] ]);
+        }
 	}
     
 	function select(meth) {
-		var newArray = new Array();
-		
-		for (var i = 0; i < array.length; i++) {
-			if (_call(array[i], meth)) {
-				newArray.push(array[i]);
+	    var newSet = another();
+	    
+		for (var k in hash) {
+			if (_call(meth, [ hash[k] ])) {
+				newSet.insert(hash[k]);
 			}
 		}
 		
-		return newArray;
+		return newSet;
 	}
 	
 	function reject(meth) {
-		var newArray = new Array();
+		var newSet = another();
 		
-		for (var i = 0; i < array.length; i++) {
-			if (! _call(array[i], meth)) {
-				newArray.push(array[i]);
+		for (var k in hash) {
+			if (_call(meth, [ hash[k] ])) {
+				newSet.insert(hash[k]);
 			}
 		}
 		
-		return newArray;
+		return newSet;
 	}
 	
 	function map(meth) {
-		var newArray = new Array();
-
-		for (var i = 0; i < array.length; i++) {
-			var obj = _call(array[i], meth);
-			newArray.push(obj);
+		var newSet = another();
+		
+		for (var k in hash) {
+		    var result = _call(meth, [ hash[k] ]);
+			newSet.insert(result);
 		}
 		
-		return newArray;
+		return newSet;
 	}
 	
 	function inject(initial, meth) {
 		var newObject = initial;
 
-		for (var i = 0; i < array.length; i++) {
-			newObject = _call2(newObject, array[i], meth);
-		}
+        for (var k in hash) {
+            newObject = _call(meth, [ newObject, hash[k] ]);
+        }
 		
 		return newObject;
 	}
@@ -182,20 +167,10 @@
 	*        *
 	*********/
 
-    function _call(x, meth) {
-        if (meth instanceof Function) {
-            return meth.call(null, x);
-        } else { // since instanceof String seems to not work.
-        	return x[meth]();
-        }
-    }
-
-    function _call2(accum, x, meth) {
-        if (meth instanceof Function) {
-            return meth.call(null, accum, x);
-        } else { // since instanceof String seems to not work.
-        	return x[meth](accum);
-        }
+    function _call(meth, args) {
+        if (! meth instanceof Function) meth = args[0][meth];
+        
+        return meth.apply(null, args);
     }
 
 	/***********
@@ -240,7 +215,7 @@
 	*          *
 	***********/
 	
-    function howMany():Number			   { return array.length;   }
+    function howMany():Number			   { return length;   }
 
     function areThereAny():Boolean         { return howMany() > 0;  }
     
@@ -261,18 +236,18 @@
 	**********/
 	
     function mustBe(meth):Boolean {
-		var ary = select(meth);
-		return ary.length == howMany();
+		var newSet = select(meth);
+		return howMany() == newSet.howMany();
 	}
 
     function mustNotBe(meth):Boolean {
-		var ary = reject(meth);
-		return ary.length == howMany();
+		var newSet = reject(meth);
+		return howMany() == newSet.howMany();
 	}
     
     function someMustBe(meth):Boolean {
-		var ary = select(meth);
-		return ary.length > 0;
+		var newSet = select(meth);
+		return newSet.areThereAny();
 	}
     
 	/***************
@@ -281,9 +256,8 @@
 	*              *
 	***************/
 	
-	// This might not play nice with union.
 	function mustBeOnly(obj):Boolean {
-		return (array.length == 1) && (array[0] == obj);
+		return (length == 1) && (theFirst() == obj);
 	}
 
     /******************
@@ -300,13 +274,12 @@
 	
 	function toString() {
 		var string = "{ ";
-		for (var i = 0; i < array.length-1; i++)
-			string += array[i] + ", ";
 		
-		if (array.length > 0)
-			string += array[array.length-1] + " ";
-		
-		string += "}";
+		for (var k in hash) {
+			string += hash[k] + ", ";
+		}
+				
+		string += " }";
 		
 		return string;
 	}

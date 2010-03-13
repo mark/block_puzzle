@@ -1,5 +1,6 @@
 import blockpuzzle.controller.mailbox.BPMailbox;
 import blockpuzzle.controller.pen.BPMouseEvent;
+import blockpuzzle.view.clock.BPClock;
 import JSON;
 
 class blockpuzzle.base.BPObject {
@@ -12,13 +13,10 @@ class blockpuzzle.base.BPObject {
     var __listening:Object;
     var __listenedTo:Object;
 
-    // Semaphore system
-    var __gates:Object;
-    
     function BPObject() {
         __id = __nextId++;
 
-        //trace("INIT " + id() + "\t " + className(null, true).join('.'));
+        trace("INIT " + id() + "\t " + className(null, true).join('.'));
     }
 
     /*************
@@ -49,6 +47,10 @@ class blockpuzzle.base.BPObject {
         BPMailbox.mailbox.post(message, this, info);
     }
 
+    function postLater(message:String, seconds:Number, info) {
+        BPClock.clock.addSignal(message, seconds, this, info);
+    }
+    
     function later(action, note:String) {
         BPMailbox.mailbox.callLater(this, action, note);
     }
@@ -114,28 +116,6 @@ class blockpuzzle.base.BPObject {
         }
         
         return null;
-    }
-    
-    /********************
-    *                   *
-    * Semaphore Methods *
-    *                   *
-    ********************/
-    
-    function closeGate(gate:String):Boolean {
-        if (__gates == null) __gates = new Object();
-        
-        var wasClosed = __gates[gate] != null;
-        
-        __gates[gate] = true;
-        
-        return wasClosed;
-    }
-    
-    function openGate(gate:String) {
-        if (__gates == null) __gates = new Object();
-        
-        __gates[gate] = null;
     }
     
     /*********************

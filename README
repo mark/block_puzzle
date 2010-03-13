@@ -170,7 +170,7 @@ BPRectanglePen:
   Phases are the implementation of game flow.
   
 * BPPhase:
-  A phase is an atomic unit of game flow.  Phaes can be entered, exited, and either succeed or fail.
+  A phase is an atomic unit of game flow.  Phases can be entered, exited, and either succeed or fail.
 
 * BPPhaseTable: (BPGameLoop?)
   A phase table handles phases, and transitioning between them.  It performs the main game loop.

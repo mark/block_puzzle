@@ -14,7 +14,7 @@ class blockpuzzle.view.clock.BPClock extends BPObject {
     var timers:Object;
     
     // Keeping track of signals
-    var signals:Array;
+    var signals:BPSignalQueue;
     
     /***************
     *              *
@@ -30,7 +30,7 @@ class blockpuzzle.view.clock.BPClock extends BPObject {
         this.zeroTime = new Date().getTime();
         this.currentTime = zeroTime;        
         this.timers = new Object();
-        this.signals = new Array();
+        this.signals = new BPSignalQueue();
         
         post("BPStartOfFrame", now());
     }
@@ -55,13 +55,7 @@ class blockpuzzle.view.clock.BPClock extends BPObject {
         
         post("BPStartOfFrame", now());
         
-        var index;
-        for (index = 0; signals[index].time < now(); index++) {
-            var signal = signals[index];
-            //BPMailbox.mailbox.post(signal.message, signal.source, signal.info);
-        }
-        
-        signals.splice(0, index);
+        signals.resolveSignals( now() );
     }
 
     /****************
@@ -95,13 +89,10 @@ class blockpuzzle.view.clock.BPClock extends BPObject {
     *                *
     *****************/
     
-    function addSignal(message:String, time:Number, source, info) {
-        var triggerWhen = now() + time * 1000.0;
-        var i = 0;
-        
-        while (signals[i].time < triggerWhen) i++;
-        
-        signals.splice(i, 0, { time: triggerWhen, message: message, source: source, info: info })
+    function addSignal(message:String, seconds:Number, source, info) {
+        var triggerWhen = now() + seconds * 1000.0;
+
+        signals.addSignal(message, triggerWhen, source, info);
     }
     
     /******************

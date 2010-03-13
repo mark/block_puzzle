@@ -10,12 +10,12 @@ class blockpuzzle.model.collection.BPRegion extends BPSet {
 	*                     *
 	**********************/
 	
-	function BPRegion(array:Array) {
-		super(array);
+	function BPRegion(of:Object) {
+		super(of);
 	}
 
-	function another(array:Array):BPSet {
-		return new BPRegion(array);
+	function another(of:Object):BPSet {
+		return new BPRegion(of);
 	}
 	
 	function board():BPBoard {
@@ -29,8 +29,7 @@ class blockpuzzle.model.collection.BPRegion extends BPSet {
 	*****************/
 	
 	function inDirection(direction:BPDirection):BPRegion {
-		var ary = map( function(patch) { return patch.inDirection(direction); } );
-		return BPRegion(another(ary));
+		return map( function(patch) { return patch.inDirection(direction); } );
 	}
 	
 	function overlaps(other:BPRegion):Boolean {

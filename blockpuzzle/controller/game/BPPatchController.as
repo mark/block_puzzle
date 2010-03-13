@@ -3,6 +3,8 @@ import blockpuzzle.model.game.*;
 import blockpuzzle.view.gui.BPButton;
 import blockpuzzle.controller.event.BPAction;
 import blockpuzzle.controller.game.*;
+import blockpuzzle.io.BPTile;
+import blockpuzzle.io.BPTileLibrary;
 
 class blockpuzzle.controller.game.BPPatchController {
 	

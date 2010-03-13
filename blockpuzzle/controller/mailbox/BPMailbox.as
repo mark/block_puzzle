@@ -10,10 +10,13 @@ class blockpuzzle.controller.mailbox.BPMailbox extends BPObject {
     
     var delayedCalls:BPDelayedCallQueue;
     
+    var resolving:Boolean;
+    
     function BPMailbox() {
         this.postedMessages = new Array();
         this.observers = new Object();
         this.delayedCalls = new BPDelayedCallQueue();
+        this.resolving = false;
         
         BPMailbox.mailbox = this;
     }
@@ -25,19 +28,44 @@ class blockpuzzle.controller.mailbox.BPMailbox extends BPObject {
     ****************************/
     
     function resolveMessages() {
-        while (postedMessages.length > 0) {
-            var message = postedMessages.shift();
+        resolving = true;
+        while (anyPostedMessages()) {
+            var messagesToResolve = getPostedMessages();
             
-            resolveMessage(message);
+            for (var i = 0; i < messagesToResolve.length; i++) {
+                var message = messagesToResolve[i];
+
+                resolveMessage(message);
+            }
+            
+            delayedCalls.makeDelayedCalls();
         }
-        
-        delayedCalls.makeDelayedCalls();
+        resolving = false;
     }
     
     function resolveMessage(message:BPMessage) {
         var observersForMessage = observers[message.message];
         
         observersForMessage.receivedMessage(message);
+    }
+    
+    /********************************
+    *                               *
+    * Examining the Posted Messages *
+    *                               *
+    ********************************/
+    
+    // Are there any posted messages waiting to be resolved?
+    function anyPostedMessages():Boolean {
+        return postedMessages.length > 0;
+    }
+    
+    // Gets the list of posted messages waiting to be resolved, and clears the list
+    function getPostedMessages():Array {
+        var messagesToResolve = postedMessages;
+        postedMessages = new Array();
+        
+        return messagesToResolve;
     }
     
     /********************
@@ -48,13 +76,17 @@ class blockpuzzle.controller.mailbox.BPMailbox extends BPObject {
     
     function post(message:String, source:Object, info:Object) {
         var newMessage = new BPMessage(message, source, info);
-        
-        postedMessages.push(newMessage);
+
+        postMessage( newMessage );
+    }
+    
+    function postMessage(message:BPMessage) {
+        postedMessages.push(message);
         
         // Uncomment the next line to see all mailbox messages as they get posted:
         // //trace("POST\t" + message)
 
-        if (postedMessages.length == 1) { // if it was empty before this posting
+        if (! resolving) { // if not currently resolving messages...
             resolveMessages();
         }
     }

@@ -1,4 +1,4 @@
-class blockpuzzle.controller.game.BPTile {
+class blockpuzzle.io.BPTile {
 	
 	var _frame:String;
 

@@ -50,7 +50,8 @@ class blockpuzzle.controller.event.BPBehavior extends BPAction {
 		
 		// Validity check -- can't walk off the board
 		
-			if (! newRegion.isValid()) fail();
+		    // FIXME: Need a new, region-based validity test
+			// if (! newRegion.isValid()) fail();
 			
     	// Now we have to test for the actors
         

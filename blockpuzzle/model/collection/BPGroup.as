@@ -9,12 +9,12 @@ class blockpuzzle.model.collection.BPGroup extends BPSet {
 	*              *
 	***************/
 	
-	function BPGroup(array:Array) {
-		super(array);
+	function BPGroup(of:Object) {
+		super(of);
 	}
 	
-	function another(array:Array):BPSet {
-		return new BPGroup(array);
+	function another(of:Object):BPSet {
+		return new BPGroup(of);
 	}
 	
 	/**************
