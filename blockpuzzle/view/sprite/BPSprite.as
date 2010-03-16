@@ -47,7 +47,7 @@ class blockpuzzle.view.sprite.BPSprite extends BPObject {
         this.centered   = options.centered;
         this.animations = new Array();
         
-        generateMovieClip(options.parent, clipDepth);
+        generateMovieClip(options.parent, clipDepth, options.visible === false);
         
 		this.updates = new BPSpriteChange(this);
 		// listenFor("BPAnimationCreated", this, animationCreated);
@@ -64,10 +64,10 @@ class blockpuzzle.view.sprite.BPSprite extends BPObject {
     *                 *
     ******************/
 
-    function generateMovieClip(parent:MovieClip, depth:Number) {
+    function generateMovieClip(parent:MovieClip, depth:Number, hidden:Boolean) {
         movieClip = parent.attachMovie(clip, clipName, depth);
         movieClip._visible = true;
-		movieClip._alpha = 100;
+		movieClip._alpha = hidden ? 0 : 100;
         movieClip._x = 0;
         movieClip._dx = 0;
         movieClip._real_x = 0;

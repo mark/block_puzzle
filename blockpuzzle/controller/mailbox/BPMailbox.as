@@ -5,18 +5,16 @@ class blockpuzzle.controller.mailbox.BPMailbox extends BPObject {
     
     static var mailbox:BPMailbox;
     
-    var postedMessages:Array;
+    var messageQueue:BPMessageQueue;
     var observers:Object;
     
-    var delayedCalls:BPDelayedCallQueue;
-    
-    var resolving:Boolean;
+    var holdResolution:Boolean;
     
     function BPMailbox() {
-        this.postedMessages = new Array();
+        this.messageQueue = new BPMessageQueue();
         this.observers = new Object();
-        this.delayedCalls = new BPDelayedCallQueue();
-        this.resolving = false;
+    
+        this.holdResolution = false;
         
         BPMailbox.mailbox = this;
     }
@@ -28,44 +26,23 @@ class blockpuzzle.controller.mailbox.BPMailbox extends BPObject {
     ****************************/
     
     function resolveMessages() {
-        resolving = true;
-        while (anyPostedMessages()) {
-            var messagesToResolve = getPostedMessages();
-            
-            for (var i = 0; i < messagesToResolve.length; i++) {
-                var message = messagesToResolve[i];
+        while (messageQueue.anyPendingMessages()) {
+            var nextMessage = messageQueue.nextMessage();
 
-                resolveMessage(message);
+            if (nextMessage instanceof BPMessage) {
+                resolveMessage( nextMessage );
+            } else if (nextMessage instanceof BPDelayedCall) {
+                nextMessage.call();
             }
             
-            delayedCalls.makeDelayedCalls();
+            messageQueue.clearMessage( nextMessage );
         }
-        resolving = false;
     }
     
     function resolveMessage(message:BPMessage) {
         var observersForMessage = observers[message.message];
         
         observersForMessage.receivedMessage(message);
-    }
-    
-    /********************************
-    *                               *
-    * Examining the Posted Messages *
-    *                               *
-    ********************************/
-    
-    // Are there any posted messages waiting to be resolved?
-    function anyPostedMessages():Boolean {
-        return postedMessages.length > 0;
-    }
-    
-    // Gets the list of posted messages waiting to be resolved, and clears the list
-    function getPostedMessages():Array {
-        var messagesToResolve = postedMessages;
-        postedMessages = new Array();
-        
-        return messagesToResolve;
     }
     
     /********************
@@ -80,13 +57,39 @@ class blockpuzzle.controller.mailbox.BPMailbox extends BPObject {
         postMessage( newMessage );
     }
     
-    function postMessage(message:BPMessage) {
-        postedMessages.push(message);
+    function callLater(object:Object, action, info:Object) {
+        var newDelayedCall = new BPDelayedCall(object, action, info);
+        
+        postMessage( newDelayedCall );
+    }
+    
+    function postMessage(message:Object) {
+        var shouldStartResolution = ! messageQueue.anyPendingMessages() && ! holdResolution;
+        
+        messageQueue.addMessage(message);
         
         // Uncomment the next line to see all mailbox messages as they get posted:
         // //trace("POST\t" + message)
 
-        if (! resolving) { // if not currently resolving messages...
+        if (shouldStartResolution) { // if not currently resolving messages...
+            resolveMessages();
+        }
+    }
+    
+    /*****************************************
+    *                                        *
+    * Holding and Resuming the Message Queue *
+    *                                        *
+    *****************************************/
+    
+    function pause() {
+        holdResolution = true;
+    }
+    
+    function resume() {
+        holdResolution = false;
+        
+        if (messageQueue.anyPendingMessages()) {
             resolveMessages();
         }
     }
@@ -155,14 +158,4 @@ class blockpuzzle.controller.mailbox.BPMailbox extends BPObject {
         observerQueue.removeObserversBySource(source);
     }
     
-    /************************
-    *                       *
-    * Making a Delayed Call *
-    *                       *
-    ************************/
-    
-    function callLater(object:Object, action, note:String) {
-        delayedCalls.callLater(object, action, note);
-    }
-
 }

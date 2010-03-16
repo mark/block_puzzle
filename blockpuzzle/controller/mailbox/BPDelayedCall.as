@@ -14,19 +14,19 @@ class blockpuzzle.controller.mailbox.BPDelayedCall {
     
     var self:Object;
     var action;
-    var note:String;
+    var info:Object;
     
-    function BPDelayedCall(self:Object, action, note:String) {
+    function BPDelayedCall(self:Object, action, info:Object) {
         this.self = self;
         this.action = action;
-        this.note = note;
+        this.info = info;
     }
     
     function call() {
         if (action instanceof Function) {
-            action.call(self);
+            action.call(self, info);
         } else {
-            self[action].call(self);
+            self[action].call(self, info);
         }
     }
 

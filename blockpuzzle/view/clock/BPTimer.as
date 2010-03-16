@@ -67,7 +67,7 @@ class blockpuzzle.view.clock.BPTimer extends BPObject {
         if (endingTime != null && now >= endingTime) {
             post("BPTimerStop");
             
-            stopListening();
+            later(stopListening);
             BPClock.clock.removeTimer(this);
         } else {
             if (now >= nextInterval) {

@@ -10,8 +10,8 @@ class blockpuzzle.controller.mailbox.BPDelayedCallQueue extends BPObject {
     }
     
     // Adds a new delayed call to the queue
-    function callLater(object:Object, action, note:String) {
-        var newDelayedCall = new BPDelayedCall(object, action, note);
+    function callLater(object:Object, action, info:Object) {
+        var newDelayedCall = new BPDelayedCall(object, action, info);
         
         delayedCalls.push(newDelayedCall);
     }

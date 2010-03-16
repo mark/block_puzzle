@@ -16,7 +16,7 @@ class blockpuzzle.base.BPObject {
     function BPObject() {
         __id = __nextId++;
 
-        trace("INIT " + id() + "\t " + className(null, true).join('.'));
+        //trace("INIT " + id() + "\t " + className(null, true).join('.'));
     }
 
     /*************
@@ -51,8 +51,8 @@ class blockpuzzle.base.BPObject {
         BPClock.clock.addSignal(message, seconds, this, info);
     }
     
-    function later(action, note:String) {
-        BPMailbox.mailbox.callLater(this, action, note);
+    function later(action, info:Object) {
+        BPMailbox.mailbox.callLater(this, action, info);
     }
     
     // These methods are to keep track of the object's presence in the mailbox,

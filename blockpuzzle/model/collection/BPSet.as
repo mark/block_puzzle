@@ -33,6 +33,10 @@
 	*               *
 	****************/
 	
+	function fetch(id:Number) {
+	    return hash[ id ];
+	}
+	
     function theFirst() {
 		for (var k in hash) {
 		    return hash[ k ];
@@ -215,19 +219,21 @@
 	*          *
 	***********/
 	
-    function howMany():Number			   { return length;   }
+    function howMany():Number			   { return length; }
 
     function areThereAny():Boolean         { return howMany() > 0;  }
     
+    function isEmpty():Boolean		       { return howMany() == 0; }
+    
     function mustBeNone():Boolean		   { return howMany() == 0; }
 
-    function areMoreThan(n:Number):Boolean { return howMany() > n;  }
+    function areMoreThan(n:Number):Boolean { return howMany() >  n; }
     
     function areAtLeast(n:Number):Boolean  { return howMany() >= n; }
     
     function areAtMost(n:Number):Boolean   { return howMany() <= n; }
 
-    function areLessThan(n:Number):Boolean { return howMany() < n;  }
+    function areLessThan(n:Number):Boolean { return howMany() <  n; }
 
 	/**********
 	*         *

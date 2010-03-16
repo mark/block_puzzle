@@ -1,9 +1,10 @@
 ﻿import blockpuzzle.base.BPObject;
 import blockpuzzle.controller.mailbox.BPMessage;
 import blockpuzzle.view.clock.*;
+import blockpuzzle.view.choreography.BPSchedulable;
 import blockpuzzle.view.animation.*;
 
-class blockpuzzle.view.animation.BPAnimation extends BPObject {
+class blockpuzzle.view.animation.BPAnimation extends BPSchedulable {
 
     // Data object variables
     var movieClip:MovieClip;
@@ -42,7 +43,8 @@ class blockpuzzle.view.animation.BPAnimation extends BPObject {
 		listenForAny("BPFinishAnimations", finish); // For finishing all animations
 		listenForAny("BPCancelAnimations", cancel); // For cancelling all animations
 		
-		shouldAutostart = true; // Should this animation start automatically?
+		//shouldAutostart = true; // Should this animation start automatically?
+		shouldAutostart = false;
 		
 		later(autostart);
     }
@@ -140,21 +142,21 @@ class blockpuzzle.view.animation.BPAnimation extends BPObject {
     ******************/
 
     function start() {
+        super.start();
         shouldAutostart = false;
         
         startTime = BPClock.clock.now();
-        //trace(className() + ":" + id() + "#start")
         setup();
         animate(0.0);
         post("BPAnimationStart");
         
-        //trace("<" + id() + ">.start()");
         target.animationStarted(this);
     }
     
     function finish() {
         animate(1.0);
         cancel();
+        super.finish();
     }
 
     /********************
@@ -182,19 +184,12 @@ class blockpuzzle.view.animation.BPAnimation extends BPObject {
     }
     
     function cancel() {
-		// if (target instanceof BPActor)
-		//     BPMailbox.mailbox.post("BPActorAnimationDestroyed", target, this);
-		// else if (target instanceof BPPatch)
-	    //     BPMailbox.mailbox.post("BPPatchAnimationDestroyed", target, this);
-
         cleanup();
 
         post("BPAnimationStop");
         //trace("<" + id() + ">.cancel()");
         
         target.animationStopped(this);
-        
-        later(stopListening);
     }
     
     function setup() {
