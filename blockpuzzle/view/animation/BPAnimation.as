@@ -11,6 +11,7 @@ class blockpuzzle.view.animation.BPAnimation extends BPSchedulable {
     var target:Object;
     
     var startTime:Number;
+    var duration:Number;
     
     var shouldAutostart:Boolean;
     
@@ -30,15 +31,9 @@ class blockpuzzle.view.animation.BPAnimation extends BPSchedulable {
 
 		this.target = target;
 
-        ////trace("\tANIMATION\t" + this);
         target.animationCreated(this);
 		
 		this.continuous = false;
-		
-		// if (target instanceof BPActor)
-		//     BPMailbox.mailbox.post("BPActorAnimationCreated", target, this);
-		// else if (target instanceof BPPatch)
-	    //     BPMailbox.mailbox.post("BPPatchAnimationCreated", target, this);
 		
 		listenForAny("BPFinishAnimations", finish); // For finishing all animations
 		listenForAny("BPCancelAnimations", cancel); // For cancelling all animations
@@ -62,70 +57,20 @@ class blockpuzzle.view.animation.BPAnimation extends BPSchedulable {
 		else
 			return movieClip == obj.getMovieClip();
 	}
-	
-    /****************************
-    *                           *
-    * Indirect Starting Methods *
-    *                           *
-    ****************************/
-    
-    function startInSeconds(seconds:Number) {
-        shouldAutostart = false;
-        
-        var startTimer = timer("startInSeconds", seconds);
 
-        waiting = function() { return startTimer.completion(); }
-        
-        listenFor("BPTimerStop", startTimer, start);
-    }
-    
-    function startWhenAnimationStarts(link:BPAnimation) {
-        shouldAutostart = false;
-        
-        waiting = function() { return link.waiting(); }
-        
-        listenFor("BPAnimationStart", link, start);
-    }
-    
-    function startWhenAnimationEnds(link:BPAnimation) {
-        shouldAutostart = false;
-        
-        waiting = function() { return link.completion(); }
-        
-        listenFor("BPAnimationStop", link, start);
-    }
-    
-    /**************************
-    *                         *
-    * Indirect Ending Methods *
-    *                         *
-    **************************/
-    
-    function endInSeconds(seconds:Number) {
+	/*****************
+	*                *
+	* Ending Methods *
+	*                *
+	*****************/
+	
+    function setDuration(seconds:Number) {
         var runTimer = timer("endInSeconds", seconds);
 
         completion = function() { return runTimer.completion(); };
         
         listenFor("BPTimerActive", runTimer, runFrame);
         listenFor("BPTimerStop",   runTimer, finish);
-    }
-    
-    function endInSecondsAfterStart(seconds:Number) {
-        listenFor("BPAnimationStart", this, function() { endInSeconds(seconds); });
-    }
-
-    function endWhenAnimationStarts(link:BPAnimation) {
-        completion = function() { link.waiting(); }
-        
-        listenForAny("BPStartOfFrame",       runFrame);
-        listenFor("BPAnimationStart",  link, finish);
-    }
-    
-    function endWhenAnimationEnds(link:BPAnimation) {
-        completion = function() { return link.completion(); }
-        
-        listenForAny("BPStartOfFrame",       runFrame);
-        listenFor("BPAnimationStop",   link, finish);
     }
     
     function runContinuously() {
@@ -151,6 +96,7 @@ class blockpuzzle.view.animation.BPAnimation extends BPSchedulable {
         post("BPAnimationStart");
         
         target.animationStarted(this);
+        setDuration( duration );
     }
     
     function finish() {
@@ -215,7 +161,6 @@ class blockpuzzle.view.animation.BPAnimation extends BPSchedulable {
     }
     
     function timer(name:String, seconds:Number, tickPeriod:Number):BPTimer {
-        // return BPClock.clock.addTimer(name + "_" + id(), seconds);
         return new BPTimer(name + "_" + id(), seconds, tickPeriod);
     }
      

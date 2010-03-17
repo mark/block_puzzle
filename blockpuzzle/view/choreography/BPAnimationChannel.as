@@ -3,7 +3,7 @@ import blockpuzzle.controller.mailbox.BPMessage;
 import blockpuzzle.model.collection.BPSet;
 import blockpuzzle.view.choreography.BPSchedulable;
 
-class blockpuzzle.view.animation.BPAnimationChannel extends BPObject {
+class blockpuzzle.view.animation.BPChannel extends BPObject {
     
     var waiting: BPSet;
     var active:  BPSet;
@@ -11,7 +11,7 @@ class blockpuzzle.view.animation.BPAnimationChannel extends BPObject {
     
     var timePaused:Number;
     
-    function BPAnimationChannel() {
+    function BPChannel() {
         waiting  = new BPSet();
         active   = new BPSet();
         finished = new BPSet();

@@ -1,14 +1,14 @@
-import blockpuzzle.view.animation.BPAnimationChannel;
 import blockpuzzle.view.animation.BPEmptyAnimation;
+import blockpuzzle.view.choreography.BPChannel;
 import blockpuzzle.view.choreography.BPSchedulable;
 
 class blockpuzzle.view.choreography.BPRoutine extends BPSchedulable {
     
-    var channel:BPAnimationChannel;
+    var channel:BPChannel;
     var waitingFor:Object;
     
     function BPRoutine(options:Object) {
-        this.channel = new BPAnimationChannel();
+        this.channel = new BPChannel();
         this.waitingFor = new Object();
 
         // So we know when animations finish...
@@ -143,7 +143,7 @@ class blockpuzzle.view.choreography.BPRoutine extends BPSchedulable {
     }
     
     function delay(seconds:Number) {
-        // return new BPEmptyAnimation(seconds);
+        return new BPEmptyAnimation(seconds);
     }
     
     function replaceWith(original:BPSchedulable, replacement:BPSchedulable) {
