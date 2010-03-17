@@ -1,17 +1,28 @@
+import blockpuzzle.base.BPObject;
 import blockpuzzle.controller.mailbox.*;
 
 class blockpuzzle.controller.mailbox.BPObserverQueue {
     
     var observers:Array;
+    var bySource:Object;
     
     function BPObserverQueue() {
         this.observers = new Array();
+        this.bySource = new Object();
     }
     
-    function addObserver(message:String, source:Object, observer:Object, action:Function) {
+    function addObserver(message:String, source:BPObject, observer:BPObject, action:Function) {
         var observerObj = new BPObserver(message, source, observer, action);
         
-        observers.push(observerObj);
+        if (source == null) {
+            observers.push(observerObj);
+        } else {
+            if (bySource[ source.id() ] == null) {
+                bySource[ source.id() ] = new Array();
+            }
+            
+            bySource[ source.id() ].push( observerObj );
+        }
     }
 
     /*********************
@@ -21,6 +32,14 @@ class blockpuzzle.controller.mailbox.BPObserverQueue {
     *********************/
     
     function receivedMessage(message:BPMessage) {
+        var watchers = bySource[ message.source.id() ];
+                
+        if ( watchers ) {
+            for (var i = 0; i < watchers.length; i++) {
+                watchers[i].receivedMessage(message);                
+            }
+        }
+        
         for (var i = 0; i < observers.length; i++) {
             observers[i].receivedMessage(message);
         }
@@ -32,25 +51,26 @@ class blockpuzzle.controller.mailbox.BPObserverQueue {
     *                    *
     *********************/
     
-    function removeObserversBySource(source:Object) {
+    function removeObserversBySource(source:BPObject) {
+        delete observers[ source.id() ];
+    }
+    
+    function removeObserversByObserverFromArray(observer:Object, array:Array) {
         var i = 0;
         
-        while (i < observers.length) {
-            if (observers[i].isSourceEqualTo(source))
-                observers.splice(i, 1);
+        while (i < array.length) {
+            if (array[i].isObserverEqualTo(observer))
+                array.splice(i, 1);
             else
                 i++;
         }
     }
     
     function removeObserversByObserver(observer:Object) {
-        var i = 0;
+        removeObserversByObserverFromArray(observer, observers);
         
-        while (i < observers.length) {
-            if (observers[i].isObserverEqualTo(observer))
-                observers.splice(i, 1);
-            else
-                i++;
+        for (var k in bySource) {
+            removeObserversByObserverFromArray(observer, bySource[ k ]);
         }
     }
 
