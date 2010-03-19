@@ -1,20 +1,24 @@
 import blockpuzzle.view.animation.BPEmptyAnimation;
 import blockpuzzle.view.choreography.BPChannel;
-import blockpuzzle.view.choreography.BPSchedulable;
+import blockpuzzle.view.animation.BPSchedulable;
 
 class blockpuzzle.view.choreography.BPRoutine extends BPSchedulable {
     
     var channel:BPChannel;
     var waitingFor:Object;
+    var _options:Object;
     
     function BPRoutine(options:Object) {
         this.channel = new BPChannel();
         this.waitingFor = new Object();
-
+        this._options = options;
+        
         // So we know when animations finish...
         listenFor("BPChannelAnimationFinished", channel, tryStartingAnimations);
-        
-        later(setup, options);
+    }
+    
+    function options(key:String) {
+        return _options[key];
     }
     
     /*******************
@@ -23,7 +27,7 @@ class blockpuzzle.view.choreography.BPRoutine extends BPSchedulable {
     *                  *
     *******************/
     
-    function setup(options:Object) {
+    function setup() {
         // OVERRIDE ME!
     }
     

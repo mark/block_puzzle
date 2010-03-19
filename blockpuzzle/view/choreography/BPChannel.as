@@ -1,9 +1,9 @@
 import blockpuzzle.base.BPObject;
 import blockpuzzle.controller.mailbox.BPMessage;
 import blockpuzzle.model.collection.BPSet;
-import blockpuzzle.view.choreography.BPSchedulable;
+import blockpuzzle.view.animation.BPSchedulable;
 
-class blockpuzzle.view.animation.BPChannel extends BPObject {
+class blockpuzzle.view.choreography.BPChannel extends BPObject {
     
     var waiting: BPSet;
     var active:  BPSet;
@@ -28,11 +28,11 @@ class blockpuzzle.view.animation.BPChannel extends BPObject {
             finished.insert( schedulable );
         } else if (schedulable.isStarted()) {
             active.insert( schedulable );
-            listenFor("BPFinishing", schedulable, animationFinished);
+            listenFor("BPFinishAnimation", schedulable, animationFinished);
         } else {
             waiting.insert( schedulable );
-            listenFor("BPStarting",  schedulable, animationStarted );
-            listenFor("BPFinishing", schedulable, animationFinished);
+            listenFor("BPStartAnimation",  schedulable, animationStarted );
+            listenFor("BPFinishAnimation", schedulable, animationFinished);
         }
     }
 

@@ -1,6 +1,5 @@
 import blockpuzzle.model.game.BPActor;
 import blockpuzzle.controller.event.*;
-import blockpuzzle.view.animation.BPFadeAnimation;
 
 class blockpuzzle.controller.event.BPDisableAction extends BPAction {
 	
@@ -21,11 +20,4 @@ class blockpuzzle.controller.event.BPDisableAction extends BPAction {
 		actor.enable();
 	}
 	
-	function animate() {		
-		var fade = new BPFadeAnimation(actor);
-		fade.setDuration(0.5);
-
-        return fade;
-	}
-
 }

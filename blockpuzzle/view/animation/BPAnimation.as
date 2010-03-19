@@ -1,21 +1,11 @@
 ﻿import blockpuzzle.base.BPObject;
 import blockpuzzle.controller.mailbox.BPMessage;
 import blockpuzzle.view.clock.*;
-import blockpuzzle.view.choreography.BPSchedulable;
 import blockpuzzle.view.animation.*;
 
 class blockpuzzle.view.animation.BPAnimation extends BPSchedulable {
 
-    // Data object variables
-    var movieClip:MovieClip;
-    var target:Object;
-    
-    var startTime:Number;
     var duration:Number;
-    
-    var shouldAutostart:Boolean;
-    
-    var continuous:Boolean;
     
     /**************
     *             *
@@ -23,168 +13,119 @@ class blockpuzzle.view.animation.BPAnimation extends BPSchedulable {
     *             *
     **************/
     
-    function BPAnimation(target) {
-		 if (target instanceof MovieClip)
-		 	this.movieClip = target;
-		// else
-        // 	this.movieClip = target.getMovieClip();
+    function BPAnimation() {
+        duration = 0.0; // Instantaneous, unless otherwise specified
 
-		this.target = target;
-
-        target.animationCreated(this);
-		
-		this.continuous = false;
-		
-		listenForAny("BPFinishAnimations", finish); // For finishing all animations
-		listenForAny("BPCancelAnimations", cancel); // For cancelling all animations
-		
-		//shouldAutostart = true; // Should this animation start automatically?
-		shouldAutostart = false;
-		
-		later(autostart);
+		listenForAny("BPFinishAllAnimations", finish); // For finishing all animations
+		listenForAny("BPCancelAllAnimations", cancel); // For cancelling all animations
     }
     
+    /*******************
+    *                  *
+    * Starting Methods *
+    *                  *
+    *******************/
+    
+    function start() {
+        super.start();
 
-	/*********************
-	*                    *
-	* Movie Clip methods *
-	*                    *
-	*********************/
-	
-	function isAnimationFor(obj) {
-		if (obj instanceof MovieClip)
-			return movieClip == obj;
-		else
-			return movieClip == obj.getMovieClip();
-	}
-
-	/*****************
-	*                *
-	* Ending Methods *
-	*                *
-	*****************/
-	
-    function setDuration(seconds:Number) {
-        var runTimer = timer("endInSeconds", seconds);
-
-        completion = function() { return runTimer.completion(); };
+        animate(0.0);
         
-        listenFor("BPTimerActive", runTimer, runFrame);
-        listenFor("BPTimerStop",   runTimer, finish);
+        readyDuration();
     }
     
-    function runContinuously() {
-        continuous = true;
-        completion = function() { return 0.0; }
-        
-        listenForAny("BPStartOfFrame", runFrame);
-    }
-
     /******************
     *                 *
     * Animation Frame *
     *                 *
     ******************/
 
-    function start() {
-        super.start();
-        shouldAutostart = false;
-        
-        startTime = BPClock.clock.now();
-        setup();
-        animate(0.0);
-        post("BPAnimationStart");
-        
-        target.animationStarted(this);
-        setDuration( duration );
-    }
-    
-    function finish() {
-        animate(1.0);
-        cancel();
-        super.finish();
-    }
-
-    /********************
-    *                   *
-    * Autostart Methods *
-    *                   *
-    ********************/
-    
-    function autostart() {
-        if (shouldAutostart) start();
-    }
-    
-    function wait() {
-        shouldAutostart = false;
-    }
-    
-    /*********
-    *        *
-    * Frames *
-    *        *
-    *********/
-    
     function runFrame(message:BPMessage) {
-        animate(completion());
-    }
-    
-    function cancel() {
-        cleanup();
-
-        post("BPAnimationStop");
-        //trace("<" + id() + ">.cancel()");
+        var runTimer = message.source;
         
-        target.animationStopped(this);
+        animate(completion(runTimer));
     }
     
-    function setup() {
-        // OVERRIDE ME!
+    function completion(runTimer:BPTimer) {
+        if ( isContinuous() ) {
+            return 0.0;
+        } else if ( isInstantaneous() ) {
+            return 1.0;
+        } else {
+            return runTimer.completion();
+        }
     }
     
     function animate(completion:Number) {
         // OVERRIDE ME!
     }
 
-    function cleanup() {
-        // OVERRIDE ME!
+    function elapsed():Number {
+        return (BPClock.clock.now() - _startTime) / 1000.0;
+    }
+    
+	/*****************
+	*                *
+	* Ending Methods *
+	*                *
+	*****************/
+	
+	function finish() {
+        animate(1.0);
+        super.finish();
     }
 
-    /****************
-    *               *
-    * Clock Methods *
-    *               *
-    ****************/
-    
-    function elapsed():Number {
-        return (BPClock.clock.now() - startTime) / 1000.0;
+    function cancel() {
+        cleanup();
+
+        post("BPAnimationStop");
     }
     
-    function timer(name:String, seconds:Number, tickPeriod:Number):BPTimer {
-        return new BPTimer(name + "_" + id(), seconds, tickPeriod);
+    /*******************
+    *                  *
+    * Duration Methods *
+    *                  *
+    *******************/
+    
+    function setDuration(duration:Number) {
+        this.duration = duration;
     }
-     
-    /*********************
-    *                    *
-    * Completion Methods *
-    *                    *
-    *********************/
     
-    // These get replaced as appropriate:
+    function isContinuous():Boolean {
+        return duration == null;
+    }
     
-    function    waiting() { return 0.0; }
-    function completion() { return 1.0; }
+    function isInstantaneous():Boolean {
+        return duration == 0.0 || isNaN(duration);
+    }
     
-    function isContinuous():Boolean { return continuous; }
-    
+    function readyDuration() {
+        if ( isContinuous() ) {
+            // Continuous Animation:
+            
+            listenForAny("BPStartOfFrame", runFrame);
+        } else if ( isInstantaneous() ) {
+            // Instant Animation:
+            
+            later( finish );
+        } else {
+            // Run for specified period of time:
+            
+            var runTimer = timer("endInSeconds", duration);
+
+            listenFor("BPTimerActive", runTimer, runFrame);
+            listenFor("BPTimerStop",   runTimer, finish);
+        }
+    }
+
     /******************
     *                 *
     * Utility Methods *
     *                 *
     ******************/
     
-     function toString():String {
-         return "#<" + className() + ": " + id() + " -> " + target + ">";
-     }
-
+    function timer(name:String, seconds:Number, tickPeriod:Number):BPTimer {
+        return new BPTimer(name + "_" + id(), seconds, tickPeriod);
+    }
+     
 }

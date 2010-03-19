@@ -24,7 +24,7 @@ class blockpuzzle.controller.event.BPAction extends BPObject {
 
 	// Animation
 	
-	var _animation:BPAnimation;
+	var _animation:BPSchedulable;
 	
 	// Statuses
 	
@@ -207,7 +207,7 @@ class blockpuzzle.controller.event.BPAction extends BPObject {
 	}
 	
 	// This should be part of the choreographer...
-	function animation():BPAnimation {
+	function animation():BPSchedulable {
 	    if (_animation == null) {
     	    var animation = animate();
 
@@ -219,7 +219,7 @@ class blockpuzzle.controller.event.BPAction extends BPObject {
                 _animation = animation;
             }
             
-            _animation.wait();
+            // _animation.wait();
 	    }
 	    
 	    animated = true;

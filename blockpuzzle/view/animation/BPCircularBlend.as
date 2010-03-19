@@ -52,8 +52,6 @@ class blockpuzzle.view.animation.BPCircularBlend extends BPBlend {
         }
         
         if (duration == null) duration = Math.abs(final - initial) / Math.abs(rate);
-        
-        setupBlend();
     }
 
 }

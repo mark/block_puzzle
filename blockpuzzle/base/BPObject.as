@@ -16,7 +16,7 @@ class blockpuzzle.base.BPObject {
     function BPObject() {
         __id = __nextId++;
 
-        //trace("INIT " + id() + "\t " + className(null, true).join('.'));
+        // trace("INIT " + id() + "\t " + className(null, true).join('.'));
     }
 
     /*************

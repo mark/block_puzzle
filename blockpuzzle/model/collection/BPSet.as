@@ -116,7 +116,7 @@
     
     function each(meth) {
         for (var k in hash) {
-            _call(meth, [ hash[k] ]);
+            _call(meth, [ hash[k] ], k);
         }
 	}
     
@@ -171,7 +171,7 @@
 	*        *
 	*********/
 
-    function _call(meth, args) {
+    function _call(meth, args, key) {
         if (! meth instanceof Function) meth = args[0][meth];
         
         return meth.apply(null, args);

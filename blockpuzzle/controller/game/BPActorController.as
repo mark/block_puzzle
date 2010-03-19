@@ -178,7 +178,7 @@ class blockpuzzle.controller.game.BPActorController extends BPObject {
     function spriteIdle(actor:BPActor) {
         var idleInSeconds = idlePeriod(actor);
 
-        if (idleInSeconds >= 0) idleAnimation(actor).startInSeconds(idleInSeconds);
+        // if (idleInSeconds >= 0) idleAnimation(actor).startInSeconds(idleInSeconds);
     }
     
     /*********************

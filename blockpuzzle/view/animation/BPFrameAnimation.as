@@ -42,10 +42,9 @@ class blockpuzzle.view.animation.BPFrameAnimation extends BPAnimation {
             nextFrame = 1;
             nextChange = rate;
             
-            if (continuous)
-                runContinuously();
-            else
-                endInSecondsAfterStart(duration);
+            if (continuous) {
+                duration = null;
+            }
         }
 
         setFrame(0);

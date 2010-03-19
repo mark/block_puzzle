@@ -1,21 +1,11 @@
-import blockpuzzle.view.animation.*;
+import blockpuzzle.view.animation.BPAnimation;
 
-class blockpuzzle.view.animation.BPEmptyAnimation extends BPSchedulable {
+class blockpuzzle.view.animation.BPEmptyAnimation extends BPAnimation {
 
     var seconds:Number;
     
     function BPEmptyAnimation(seconds) {
-        this.seconds = seconds;
-    }
-    
-    function start() {
-        super.start();
-        
-        if (seconds) {
-            setDuration( seconds );
-        } else {
-            finish();
-        }
+        this.duration = (seconds === null) ? 0.0 : seconds;
     }
 
 }

@@ -95,12 +95,12 @@ class blockpuzzle.view.animation.BPChoreographer extends BPObject {
 
     function serialChoreography(cause:BPAnimation, effect:BPAnimation) {
         //trace(">\n> " + effect + ".startWhenAnimationEnds(" + cause + ")\n>")
-        effect.startWhenAnimationEnds(cause);
+       // effect.startWhenAnimationEnds(cause);
     }
 
     function parallelChoreography(cause:BPAnimation, effect:BPAnimation) {
         //trace(">\n> " + effect + ".startWhenAnimationStarts(" + cause + ")\n>")
-        effect.startWhenAnimationStarts(cause);
+        //effect.startWhenAnimationStarts(cause);
     }
 
 }
