@@ -1,6 +1,5 @@
 import blockpuzzle.controller.event.*;
 import blockpuzzle.model.collection.BPRegion;
-import blockpuzzle.view.animation.BPPatchAnimation;
 
 class blockpuzzle.controller.event.BPPatchFillAction extends BPAction {
     
@@ -42,7 +41,7 @@ class blockpuzzle.controller.event.BPPatchFillAction extends BPAction {
     }
     
     function animate() {
-        return new BPPatchAnimation(region);
+        //return new BPPatchAnimation(region);
     }
 
 }

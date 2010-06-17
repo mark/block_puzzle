@@ -1,6 +1,7 @@
 import blockpuzzle.base.BPObject;
 import blockpuzzle.controller.event.*;
 import blockpuzzle.view.animation.*;
+import blockpuzzle.view.choreography.BPChoreographer;
 
 class blockpuzzle.controller.event.BPEvent extends BPObject {
 	

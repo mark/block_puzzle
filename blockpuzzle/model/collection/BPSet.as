@@ -266,12 +266,6 @@
 		return (length == 1) && (theFirst() == obj);
 	}
 
-    /******************
-    *                 *
-    * Trigger Methods *
-    *                 *
-    ******************/
-    
 	/******************
 	*                 *
 	* Utility methods *

@@ -20,7 +20,8 @@ class blockpuzzle.view.sprite.BPSprite extends BPObject {
     var clip:String;         // The linkage name of the movie clip
     var clipName:String;     // The unique identifier of the movie clip
     var clipDepth:Number;    // The z-axis depth of the movie clip
-
+    var _frame:Number;       // The frame the clip is currently at
+    
     var animations:Array;    // The animations that this sprite is currently involved in...
     
     // Options:
@@ -41,13 +42,16 @@ class blockpuzzle.view.sprite.BPSprite extends BPObject {
     function BPSprite(owner, clip:String, options:Object) {
         this.owner      = owner;
         this.clip       = clip;
-        this.clipName   = "Sprite_" + id;
+        this.clipName   = "Sprite_" + id();
         this.clipDepth  = options.depth != null ? options.depth : id();
         this.geom       = options.geometry;
         this.centered   = options.centered;
         this.animations = new Array();
         
-        generateMovieClip(options.parent, clipDepth, options.visible === false);
+        //if (options.create !== false) {
+            this.movieClip = generateMovieClip(options.parent, clipDepth, options.visible === false);
+            setFrame(1);
+        //}
         
 		this.updates = new BPSpriteChange(this);
 		// listenFor("BPAnimationCreated", this, animationCreated);
@@ -64,22 +68,43 @@ class blockpuzzle.view.sprite.BPSprite extends BPObject {
     *                 *
     ******************/
 
-    function generateMovieClip(parent:MovieClip, depth:Number, hidden:Boolean) {
-        movieClip = parent.attachMovie(clip, clipName, depth);
-        movieClip._visible = true;
-		movieClip._alpha = hidden ? 0 : 100;
-        movieClip._x = 0;
-        movieClip._dx = 0;
-        movieClip._real_x = 0;
-        movieClip._y = 0;
-        movieClip._dy = 0;
-        movieClip._real_y = 0;
-		movieClip.gotoAndStop(1);
+    function generateMovieClip(parent:MovieClip, depth:Number, hidden:Boolean):MovieClip {
+        var mc:MovieClip;
+        
+        mc = parent.attachMovie(clip, clipName, depth);
+        mc._visible = true;
+		mc._alpha = hidden ? 0 : 100;
+        mc._x = 0;
+        mc._dx = 0;
+        mc._real_x = 0;
+        mc._y = 0;
+        mc._dy = 0;
+        mc._real_y = 0;
+		mc.gotoAndStop(1);
+		
+		return mc;
+    }
+    
+    function duplicateMovieClip(newParent:MovieClip, newDepth:Number):MovieClip {
+        var mc = generateMovieClip(newParent, newDepth, true);
+        
+        mc._visible = movieClip._visible;
+		mc._alpha = movieClip._visible;
+        mc._x = movieClip._visible;
+        mc._dx = movieClip._visible;
+        mc._real_x = movieClip._visible;
+        mc._y = movieClip._visible;
+        mc._dy = movieClip._visible;
+        mc._real_y = movieClip._visible;
+		mc.gotoAndStop(_frame);
+		
+		return mc;
     }
     
     // I think this is temporary
     
     function setFrame(frame:String) {
+        this._frame = frame;
         movieClip.gotoAndStop(frame);
     }
     

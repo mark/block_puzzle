@@ -1,6 +1,7 @@
 ﻿import blockpuzzle.base.BPObject;
 import blockpuzzle.controller.event.*;
 import blockpuzzle.view.animation.*;
+import blockpuzzle.view.choreography.BPParallelRoutine;
 
 class blockpuzzle.controller.event.BPAction extends BPObject {
 
@@ -212,7 +213,7 @@ class blockpuzzle.controller.event.BPAction extends BPObject {
     	    var animation = animate();
 
     	    if (animation instanceof Array) {
-                _animation = new BPWrapperAnimation(animation);
+                _animation = new BPParallelRoutine(animation);
             } else if (animation == null) {
                 _animation = new BPEmptyAnimation();
             } else {

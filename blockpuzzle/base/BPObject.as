@@ -1,7 +1,7 @@
 import blockpuzzle.controller.mailbox.BPMailbox;
 import blockpuzzle.controller.pen.BPMouseEvent;
 import blockpuzzle.view.clock.BPClock;
-import JSON;
+import blockpuzzle.base.JSON;
 
 class blockpuzzle.base.BPObject {
 

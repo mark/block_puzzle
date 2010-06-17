@@ -14,18 +14,41 @@ class blockpuzzle.view.sprite.BPCompositeSprite extends BPSprite {
         elements = new Array();
     }
     
-    function generateMovieClip(parent, depth) {
-        movieClip = parent.createEmptyMovieClip("Sprite_" + id, depth);
-        movieClip._x = 0;
-        movieClip._dx = 0;
-        movieClip._real_x = 0;
-        movieClip._y = 0;
-        movieClip._dy = 0;
-        movieClip._real_y = 0;
-		movieClip._visible = true;
-		movieClip._alpha = 100;
+    function generateMovieClip(parent, depth):MovieClip {
+        var mc:MovieClip;
+        
+        mc = parent.createEmptyMovieClip("Sprite_" + id(), depth);
+        mc._x = 0;
+        mc._dx = 0;
+        mc._real_x = 0;
+        mc._y = 0;
+        mc._dy = 0;
+        mc._real_y = 0;
+		mc._visible = true;
+		mc._alpha = 100;
 
 		nextDepth = 0;
+		
+		return mc;
+    }
+    
+    function duplicateMovieClip(newParent:MovieClip, newDepth:Number):MovieClip {
+        var mc = newParent.createEmptyMovieClip("Sprite_" + id(), newDepth);
+
+        mc._x = movieClip._x;
+        mc._dx = movieClip._dx;
+        mc._real_x = movieClip._real_x;
+        mc._y = movieClip._y;
+        mc._dy = movieClip._dy;
+        mc._real_y = movieClip._real_y;
+		mc._visible = movieClip._visible;
+		mc._alpha = movieClip._alpha;
+
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i] instanceof BPSprite) {}
+        }
+        
+		return mc;
     }
     
     function layer(depth:Number):BPSprite {
@@ -52,6 +75,10 @@ class blockpuzzle.view.sprite.BPCompositeSprite extends BPSprite {
         return newSprite;
     }
 
+    function setLayer(sprite:BPSprite, depth:Number):BPSprite {
+        return sprite;
+    }
+    
     function getDepth(givenDepth:Number):Number {
         if (givenDepth == null) {
             return nextDepth++;

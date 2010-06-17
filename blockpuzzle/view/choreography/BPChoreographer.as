@@ -3,7 +3,7 @@ import blockpuzzle.controller.event.*;
 import blockpuzzle.controller.mailbox.*;
 import blockpuzzle.view.animation.*;
 
-class blockpuzzle.view.animation.BPChoreographer extends BPObject {
+class blockpuzzle.view.choreography.BPChoreographer extends BPObject {
     
     var event:BPEvent;    
     var nextIndex:Number;
